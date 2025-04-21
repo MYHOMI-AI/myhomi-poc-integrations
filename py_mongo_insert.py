@@ -79,9 +79,27 @@ from dotenv import load_dotenv
 load_dotenv()
 # Load environment variables from .env file
 
-client = MongoClient("mongodb://localhost:27017/", username=os.getenv("DB_USER"), password=os.getenv("DB_PASSWORD"))
-db = client["real_estate"]
-collection = db["properties"]
+# MongoDB connection
+# Ensure you have the following environment variables set in your .env file:
+db_host = os.getenv("DB_HOST")
+db_port = os.getenv("DB_PORT")
+db_name = os.getenv("DB_NAME")
+db_collection = os.getenv("DB_COLLECTION")
+if db_port is None:
+    db_port = 27017  # Default MongoDB port
+
+if db_host is None:
+    raise ValueError("DB_HOST environment variable is not set.")
+
+if db_name is None:
+    raise ValueError("DB_NAME environment variable is not set.")
+
+if db_collection is None:
+    raise ValueError("DB_COLLECTION environment variable is not set.")
+
+client = MongoClient(f"mongodb://{db_host}:{db_port}/", username=os.getenv("DB_USER"), password=os.getenv("DB_PASSWORD"))
+db = client[db_name]
+collection = db[db_collection]
 
 collection.insert_many(sample_properties)
 print("Sample property data inserted.")
